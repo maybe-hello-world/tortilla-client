@@ -33,15 +33,6 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- Guacamole JavaScript library -->
-        <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-common-js</artifactId>
-            <version>0.9.14</version>
-            <type>zip</type>
-            <scope>runtime</scope>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -55,22 +46,6 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
-                </configuration>
-            </plugin>
-
-            <!-- Overlay guacamole-common-js (zip) -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <overlays>
-                        <overlay>
-                            <groupId>org.apache.guacamole</groupId>
-                            <artifactId>guacamole-common-js</artifactId>
-                            <type>zip</type>
-                        </overlay>
-                    </overlays>
                 </configuration>
             </plugin>
 

@@ -1,6 +1,8 @@
 package kell.guacamole.small;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.GuacamoleSocket;
 import org.apache.guacamole.net.GuacamoleTunnel;
@@ -19,6 +21,11 @@ public class GuacamoleTunnelServlet
             throws GuacamoleException {
 
         GuacamoleConfiguration config = new GuacamoleConfiguration();
+
+        // get username/password from controller
+        if (false) {
+            throw new GuacamoleClientException("Internal error. See tunnel logs");
+        }
 
         String domain = request.getParameter("domain").toLowerCase();
         String server = request.getParameter("server").toLowerCase();

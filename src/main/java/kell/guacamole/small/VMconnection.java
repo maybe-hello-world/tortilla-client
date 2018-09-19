@@ -13,91 +13,56 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class VMconnection {
-    private String m_sesskey;
-    private String m_password;
-    private String m_vmid;
-    private String m_protocol;
-    private String m_username;
-    private String m_hostname;
-    private String m_port;
-    private String m_domain;
-
-
-/*
-    GuacamoleConfiguration config = new GuacamoleConfiguration();
-        // get username/password from controller
-        if (false) {
-            throw new GuacamoleClientException("Internal error. See tunnel logs");
-        }
-
-        String domain = request.getParameter("domain").toLowerCase();
-        String server = request.getParameter("server").toLowerCase();
-        String username = request.getParameter("username").toLowerCase();
-        String password = request.getParameter("password");
-        String protocol = request.getParameter("protocol").toLowerCase();
-        String port = request.getParameter("port");
-
-        if (protocol.equals("vmrdp")) {
-            protocol = "rdp";
-            String VMID = request.getParameter("vmid");
-            config.setParameter("preconnection-blob", VMID);
-        }
-
-        // Create our configuration
-        config.setProtocol(protocol);
-        config.setParameter("hostname", server);
-        config.setParameter("port", port);
-        config.setParameter("username", username);
-        config.setParameter("domain", domain);
-        config.setParameter("password", password);
-        config.setParameter("ignore-cert", "true");
-        config.setParameter("security", "any");
- */
-
-
-
+    private String mSesskey;
+    private String mPassword;
+    private String mVMid;
+    private String mProtocol;
+    private String mUsername;
+    private String mHostname;
+    private String mPort;
+    private String mDomain;
 
     public VMconnection(HttpServletRequest request) throws GuacamoleClientException {
-        String l_sesskey = request.getParameter("sesskey").toLowerCase();
-        String l_userkey = request.getParameter("userkey").toLowerCase();
-        String l_vmid = request.getParameter("vmid").toLowerCase();
-        if(l_sesskey.matches("([a-zA-Z]+|[0-9]+)+") &&
-          l_vmid.matches("[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*")){
-            m_vmid=l_vmid;
-            m_sesskey=l_sesskey;
+        String lSesskey = request.getParameter("sesskey");
+        String lUserkey = request.getParameter("userkey");
+        String lVMid = request.getParameter("vmid");
+        if(lSesskey.matches("([a-zA-Z]+|[0-9]+)+") &&
+          lVMid.matches("[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*")){
+            mVMid =lVMid;
+            mSesskey =lSesskey;
+            mPassword =lUserkey;
         }
         else {
-            throw RightException("500","internal","Parameters doesn't match requirements");
+            throw mRightException("500","internal","Parameters doesn't match requirements");
         }
     }
 
     /**
-     * Получает недостающие параметры, заводит конфиг и возвращает его
+     * gets needed parameters, creates config and returns it
      * @param appUrl
-     * @return возвращает конфиг туннеля
+     * @return the tunnel config
      * @throws GuacamoleException
      */
     public GuacamoleConfiguration getConfig(String appUrl) throws GuacamoleException {
-        findUser(appUrl);
-        findVM(appUrl);
+        mFindUser(appUrl);
+        mFindVM(appUrl);
         GuacamoleConfiguration config = new GuacamoleConfiguration();
-        if (m_protocol.equals("vmrpd")){
+        if (mProtocol.equals("vmrpd")){
             config.setProtocol("rdp");
-            config.setParameter("preconnection-blob", m_vmid);
+            config.setParameter("preconnection-blob", mVMid);
         }
         else{
-            throw RightException("500","internal", "Unknown protocol to VM");
+            throw mRightException("500","internal", "Unknown protocol to VM");
         }
 
-        config.setParameter("hostname", m_hostname);
-        config.setParameter("port", m_port);
-        config.setParameter("username", m_username);
-        config.setParameter("domain", m_domain);
-        config.setParameter("password", m_password);
+        config.setParameter("hostname", mHostname);
+        config.setParameter("port", mPort);
+        config.setParameter("username", mUsername);
+        config.setParameter("domain", mDomain);
+        config.setParameter("password", mPassword);
         config.setParameter("ignore-cert", "true");
         config.setParameter("security", "any");
 
@@ -105,67 +70,67 @@ public class VMconnection {
     }
 
     /**
-     * поучает и заполняет даннын о пользователе
-     * @param appUrl
+     * Gets and fills user data
+     * @param pAppUrl
      * @throws GuacamoleException
      */
-    private void findUser (String appUrl) throws GuacamoleException {
-        RequestBuilder builder = RequestBuilder.get().setUri(appUrl +"/key");
-        builder.setHeader("sesskey",m_sesskey);
+    private void mFindUser(String pAppUrl) throws GuacamoleException {
+        RequestBuilder builder = RequestBuilder.get().setUri(pAppUrl +"/key");
+        builder.setHeader("sesskey", mSesskey);
 
-        JsonObject obj = performGet(builder, null);
+        JsonObject obj = mPerformGet(builder, null);
         String l_domain = obj.get("domain").getAsString();
         String l_username = obj.get("username").getAsString();
         String l_serverkey = obj.get("serverkey").getAsString();
-        byte[] txt = m_password.getBytes();
+        byte[] txt = mPassword.getBytes();
         byte[] key = l_serverkey.getBytes();
-        byte[] res = new byte[m_password.length()];
+        byte[] res = new byte[mPassword.length()];
         for (int i = 0; i < txt.length; i++) {
             res[i] = (byte) (txt[i] ^ key[i % key.length]);
         }
-        m_password= new String(res);
-        m_username= l_username; //TODO some magic to get correct username
-        m_domain =l_domain;
-        m_port = obj.get("port").getAsString();
+        mPassword = new String(res);
+        mUsername = l_username; //TODO some magic to get correct username
+        mDomain =l_domain;
+        mPort = obj.get("port").getAsString();
     }
 
     /**
-     * Получает данный о расположении виртуальной машины
-     * @param appUrl
+     * gets data about vm location
+     * @param pAppUrl
      * @throws GuacamoleException
      */
-    private void findVM(String appUrl) throws GuacamoleException {
-        RequestBuilder builder = RequestBuilder.get().setUri(appUrl +"/vminfo");
-        builder.setHeader("sesskey",m_sesskey);
-        JsonObject obj = performGet(builder, new Pair<String, String>("vmid",m_vmid));
-        m_hostname= obj.get("vmhost").getAsString();
+    private void mFindVM(String pAppUrl) throws GuacamoleException {
+        RequestBuilder builder = RequestBuilder.get().setUri(pAppUrl +"/vminfo");
+        builder.setHeader("sesskey", mSesskey);
+        JsonObject obj = mPerformGet(builder, new Pair<String, String>("vmid", mVMid));
+        mHostname = obj.get("vmhost").getAsString();
 
-         String l_vmprovider= obj.get("vmprovider").getAsString();
-         if (l_vmprovider.equals("scvmm")){
-             m_protocol=obj.get("protocol").getAsString();
+         String lVMprovider= obj.get("vmprovider").getAsString();
+         if (lVMprovider.equals("scvmm")){
+             mProtocol =obj.get("protocol").getAsString();
 
          }
          else {
-             throw RightException("500","internal", "unsupported vm manager");
+             throw mRightException("500","internal", "unsupported vm manager");
          }
 
 
     }
 
     /**
-     * Для выполнения гет-запросов
-     * @param builder уже введены адрес и заголовки запроса
+     * method to perform get-requests
+     * @param pBuilder MUST countain url and headers
      * @param params
      * @return
      * @throws GuacamoleException
      */
-    private JsonObject performGet(RequestBuilder builder, Pair<String,String>...params) throws GuacamoleException {
-      if (params==null){
+    private JsonObject mPerformGet(RequestBuilder pBuilder, Pair<String,String>...params) throws GuacamoleException {
+      if (params!=null){
         for (Pair<String,String> param:params) {
-            builder.addParameter(param.getKey(),param.getValue());
+            pBuilder.addParameter(param.getKey(),param.getValue());
         }
       }
-        HttpUriRequest request =  builder.build();
+        HttpUriRequest request =  pBuilder.build();
 
         try (CloseableHttpClient client = HttpClientBuilder.create().build();
              CloseableHttpResponse response = client.execute(request)) {
@@ -182,23 +147,23 @@ public class VMconnection {
         }
         catch (Exception e) {
 
-            throw RightException("500","internal","Some internal problems while performing GET request: " + e.getMessage());
+            throw mRightException("500","internal","Some internal problems while performing GET request: " + e.getMessage());
         }
 
     }
 
     /**
-     * Возвращает исключение с сообщением в виде Json в стандартном виде
-     * @param status
-     * @param reason
-     * @param human
+     * Returns exception with json standard message
+     * @param pStatus
+     * @param pReason
+     * @param pHuman
      * @return
      */
-    private GuacamoleClientException RightException (String status, String reason, String human){
+    private GuacamoleClientException mRightException(String pStatus, String pReason, String pHuman){
         JsonObject  err_json = new JsonObject();
-        err_json.addProperty("status",status);
-        err_json.addProperty("reason",reason);
-        err_json.addProperty("human_reason",human);
+        err_json.addProperty("status",pStatus);
+        err_json.addProperty("reason",pReason);
+        err_json.addProperty("human_reason",pHuman);
         return new GuacamoleClientException(err_json.getAsString());
     }
 

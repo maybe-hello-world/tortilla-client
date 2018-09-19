@@ -20,40 +20,12 @@ public class GuacamoleTunnelServlet
     protected GuacamoleTunnel doConnect(HttpServletRequest request)
             throws GuacamoleException {
 
-        GuacamoleConfiguration config = new GuacamoleConfiguration();
+        VMconnection conn =new VMconnection(request);
+        String someUrl ="http://controller:5876/api/v1";
 
-        // get username/password from controller
-        if (false) {
-            throw new GuacamoleClientException("Internal error. See tunnel logs");
-        }
-
-        String domain = request.getParameter("domain").toLowerCase();
-        String server = request.getParameter("server").toLowerCase();
-        String username = request.getParameter("username").toLowerCase();
-        String password = request.getParameter("password");
-        String protocol = request.getParameter("protocol").toLowerCase();
-        String port = request.getParameter("port");
-
-        if (protocol.equals("vmrdp")) {
-            protocol = "rdp";
-            String VMID = request.getParameter("vmid");
-            config.setParameter("preconnection-blob", VMID);
-        }
-
-        // Create our configuration
-        config.setProtocol(protocol);
-        config.setParameter("hostname", server);
-        config.setParameter("port", port);
-        config.setParameter("username", username);
-        config.setParameter("domain", domain);
-        config.setParameter("password", password);
-        config.setParameter("ignore-cert", "true");
-        config.setParameter("security", "any");
-
-        // Connect to guacd - everything is hard-coded here.
         GuacamoleSocket socket = new ConfiguredGuacamoleSocket(
                 new InetGuacamoleSocket("localhost", 4822),
-                config
+                conn.getConfig(someUrl)
         );
 
         // Return a new tunnel which uses the connected socket

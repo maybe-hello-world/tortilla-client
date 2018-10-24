@@ -21,7 +21,7 @@ public class GetProcessor {
         logger.debug("Perform HTTP GET request: {}", request.toString());
         try (CloseableHttpClient client = HttpClientBuilder.create().build();
              CloseableHttpResponse response = client.execute(request)) {
-             logger.debug("Perform HTTP GET request: {} \n result: {}", request.toString(), response.getStatusLine().getStatusCode());
+            logger.debug("Perform HTTP GET request: {} \n result: {}", request.toString(), response.getStatusLine().getStatusCode());
 
             if (response.getStatusLine().getStatusCode() == 200) {
                 String json = EntityUtils.toString(response.getEntity(), "UTF-8");

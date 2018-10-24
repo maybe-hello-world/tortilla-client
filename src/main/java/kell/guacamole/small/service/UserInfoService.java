@@ -22,10 +22,10 @@ public class UserInfoService {
 
     public UserInfoRestModel getUserInfo() throws GuacamoleException {
         RequestBuilder requestBuilder = RequestBuilder.get().setUri(requstUrl);
-        HttpUriRequest request =  requestBuilder.build();
-        logger.debug("Get userInfo with params : {url:" + requstUrl + ",sesskey:" + sesskey +"}");
+        HttpUriRequest request = requestBuilder.build();
+        logger.debug("Get userInfo with params : {url:" + requstUrl + ",sesskey:" + sesskey + "}");
 
-        request.setHeader("Cookie", "sesskey="+sesskey);
+        request.setHeader("Cookie", "sesskey=" + sesskey);
         String result = getProcessor.performGet(request);
         UserInfoRestModel userInfoRestModel = new Gson().fromJson(result, UserInfoRestModel.class);
         if (userInfoRestModel == null) {

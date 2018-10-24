@@ -26,18 +26,18 @@ public class VmInfoService {
     public VmInfoRestModel getVmInfo() throws GuacamoleException {
         RequestBuilder requestBuilder = RequestBuilder.get().setUri(requstUrl);
         requestBuilder.addParameter("vmid", vmid);
-        HttpUriRequest request =  requestBuilder.build();
+        HttpUriRequest request = requestBuilder.build();
 
-        logger.debug("Get vmInfo with params : {url:" + requstUrl + ",sesskey:" + sesskey + ",vmid:"+ vmid +"}");
-        request.setHeader("Cookie", "sesskey="+sesskey);
+        logger.debug("Get vmInfo with params : {url:" + requstUrl + ",sesskey:" + sesskey + ",vmid:" + vmid + "}");
+        request.setHeader("Cookie", "sesskey=" + sesskey);
         String result = getProcessor.performGet(request);
 
         VmInfoRestModel vmInfoRestModel = new Gson().fromJson(result, VmInfoRestModel.class);
-        System.out.println("Parse result :" +  vmInfoRestModel);
+        System.out.println("Parse result :" + vmInfoRestModel);
         if (vmInfoRestModel == null) {
             logger.error("Error while parsing. VM info is null.");
         }
-        return  vmInfoRestModel;
+        return vmInfoRestModel;
     }
 
     @Override

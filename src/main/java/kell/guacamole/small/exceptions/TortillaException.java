@@ -6,7 +6,7 @@ import org.apache.guacamole.GuacamoleClientException;
 public class TortillaException extends GuacamoleClientException {
 
     public TortillaException(String pStatus, String pReason, String pHuman) {
-        super(getErrorJson(pStatus, pHuman, pReason));
+        super(getErrorJson(pStatus, pReason, pHuman));
     }
 
     public static String getErrorJson(String pStatus, String pReason, String pHuman) {

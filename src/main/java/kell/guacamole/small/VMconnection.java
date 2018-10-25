@@ -54,7 +54,7 @@ public class VMconnection {
         userInfo.setUserkey(mPassword);
 
         VmInfoRestModel vmInfo = vmInfoService.getVmInfo();
-        logger.info("Creating Guacamole configuration for VM:{} \n User:{}", vmInfo, userInfo);
+        logger.debug("Creating Guacamole configuration for VM:{} \n User:{}", vmInfo, userInfo);
 
         GuacamoleConfiguration config = new GuacamoleConfiguration();
 

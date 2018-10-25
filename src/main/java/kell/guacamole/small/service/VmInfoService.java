@@ -33,7 +33,7 @@ public class VmInfoService {
         String result = getProcessor.performGet(request);
 
         VmInfoRestModel vmInfoRestModel = new Gson().fromJson(result, VmInfoRestModel.class);
-        System.out.println("Parse result :" + vmInfoRestModel);
+        logger.debug("Parse result :" + vmInfoRestModel);
         if (vmInfoRestModel == null) {
             logger.error("Error while parsing. VM info is null.");
         }

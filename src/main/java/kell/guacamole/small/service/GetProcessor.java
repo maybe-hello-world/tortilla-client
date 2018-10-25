@@ -25,7 +25,6 @@ public class GetProcessor {
 
             if (response.getStatusLine().getStatusCode() == 200) {
                 String json = EntityUtils.toString(response.getEntity(), "UTF-8");
-                System.out.println("Send HTTP request: before return:" + json);
                 return json;
             } else {
                 throw new TortillaException("500", "internal", "Some internal problems while performing GET request");

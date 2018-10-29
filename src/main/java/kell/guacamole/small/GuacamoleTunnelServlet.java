@@ -21,11 +21,11 @@ public class GuacamoleTunnelServlet
     @Override
     protected GuacamoleTunnel doConnect(HttpServletRequest request)
             throws GuacamoleException {
-        String appUrl = "http://controller:5875/api/v1";
+        String appUrl = "http://controller:5876/api/v1";
         logger.debug("Http request received from {}. Content: {}", request.getSession().getId(), request.toString());
         VMconnection conn = new VMconnection(request, appUrl);
         GuacamoleSocket socket = new ConfiguredGuacamoleSocket(
-                new InetGuacamoleSocket("localhost", 4822),
+                new InetGuacamoleSocket("guacd", 4822),
                 conn.getConfig(appUrl)
         );
 

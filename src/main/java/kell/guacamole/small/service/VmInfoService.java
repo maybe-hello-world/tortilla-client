@@ -5,8 +5,9 @@ import kell.guacamole.small.domain.VmInfoRestModel;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 
 public class VmInfoService {
 
@@ -14,7 +15,7 @@ public class VmInfoService {
     private String sesskey;
     private String vmid;
     private GetProcessor getProcessor = new GetProcessor();
-    Logger logger = LoggerFactory.getLogger(VmInfoService.class);
+    private Logger logger = LogManager.getLogger(VmInfoService.class);
 
 
     public VmInfoService(String requstUrl, String sesskey, String vmid) {
@@ -49,4 +50,5 @@ public class VmInfoService {
                 ", getProcessor=" + getProcessor +
                 '}';
     }
+
 }

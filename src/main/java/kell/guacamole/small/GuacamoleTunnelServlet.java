@@ -1,10 +1,7 @@
 package kell.guacamole.small;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.apache.logging.log4j.LogManager;
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.GuacamoleSocket;
 import org.apache.guacamole.net.GuacamoleTunnel;
@@ -12,11 +9,12 @@ import org.apache.guacamole.net.InetGuacamoleSocket;
 import org.apache.guacamole.net.SimpleGuacamoleTunnel;
 import org.apache.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.apache.guacamole.servlet.GuacamoleHTTPTunnelServlet;
+import org.apache.logging.log4j.Logger;
 
 public class GuacamoleTunnelServlet
         extends GuacamoleHTTPTunnelServlet {
 
-    Logger logger = LoggerFactory.getLogger(GuacamoleTunnelServlet.class);
+    Logger logger = LogManager.getLogger(GuacamoleTunnelServlet.class);
 
     @Override
     protected GuacamoleTunnel doConnect(HttpServletRequest request)

@@ -26,4 +26,12 @@ public class UserInfoRestModel {
         }
         return password;
     }
+
+    @Override
+    public String toString() {
+        return "UserInfoRestModel{" +
+                "domain='" + domain + '\'' +
+                ", username='" + username + '\'' +
+                '}';
+    }
 }

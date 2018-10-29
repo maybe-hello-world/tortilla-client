@@ -8,8 +8,9 @@ import kell.guacamole.small.service.VmInfoService;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,7 +22,7 @@ public class VMconnection {
     private String mPassword;
     private String mVMid;
 
-    private Logger logger = LoggerFactory.getLogger(VMconnection.class);
+    private Logger logger = LogManager.getLogger(VMconnection.class);
 
 
     public VMconnection(HttpServletRequest request, String appUrl) throws GuacamoleClientException {

@@ -5,11 +5,12 @@ import kell.guacamole.small.domain.UserInfoRestModel;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 public class UserInfoService {
-    public static Logger logger = LoggerFactory.getLogger(UserInfoService.class);
+    public static Logger logger = LogManager.getLogger(UserInfoService.class);
 
     private String requstUrl; ///key
     private String sesskey;

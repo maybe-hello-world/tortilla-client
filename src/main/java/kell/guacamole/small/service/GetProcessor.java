@@ -9,12 +9,12 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 public class GetProcessor {
-    Logger logger = LoggerFactory.getLogger(GetProcessor.class);
+    Logger logger = LogManager.getLogger(GetProcessor.class);
 
 
     public String performGet(HttpUriRequest request) throws GuacamoleException {

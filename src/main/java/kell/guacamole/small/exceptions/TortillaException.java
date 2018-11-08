@@ -16,4 +16,14 @@ public class TortillaException extends GuacamoleClientException {
         err_json.addProperty("human_reason", pHuman);
         return err_json.toString();
     }
+
+    /**
+     * To generate exception if any environment variable is absent
+     * @param variable variable name
+     * @return generated exception
+     */
+    public static TortillaException generateEnvVarException( String variable){
+        return new TortillaException("500", "internal", "Can't read environment variable. " +
+                "Please specify " + variable + "environment variable");
+    }
 }

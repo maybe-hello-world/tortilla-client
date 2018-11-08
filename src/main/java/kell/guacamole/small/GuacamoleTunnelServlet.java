@@ -1,5 +1,6 @@
 package kell.guacamole.small;
 
+import kell.guacamole.small.util.EnvVarParser;
 import org.apache.logging.log4j.LogManager;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
@@ -13,17 +14,23 @@ import org.apache.logging.log4j.Logger;
 
 public class GuacamoleTunnelServlet
         extends GuacamoleHTTPTunnelServlet {
+    public static String CONTROLLER_URL_VAR = "CONTROLLER_URL";
+    public static String GUACD_HOST_VAR =  "GUACD_HOST";
+    public static String GUACD_PORT_VAR = "GUACD_PORT";
 
     Logger logger = LogManager.getLogger(GuacamoleTunnelServlet.class);
 
     @Override
     protected GuacamoleTunnel doConnect(HttpServletRequest request)
             throws GuacamoleException {
-        String appUrl = "http://controller:5876/api/v1";
         logger.debug("Http request received from {}. Content: {}", request.getSession().getId(), request.toString());
+        String appUrl = EnvVarParser.getStringVar(CONTROLLER_URL_VAR);
+        String guacdHost = EnvVarParser.getStringVar(GUACD_HOST_VAR);
+        int guacdPort = EnvVarParser.getIntegerVar(GUACD_PORT_VAR);
+
         VMconnection conn = new VMconnection(request, appUrl);
         GuacamoleSocket socket = new ConfiguredGuacamoleSocket(
-                new InetGuacamoleSocket("guacd", 4822),
+                new InetGuacamoleSocket(guacdHost, guacdPort),
                 conn.getConfig(appUrl)
         );
 

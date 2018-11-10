@@ -24,6 +24,6 @@ public class TortillaException extends GuacamoleClientException {
      */
     public static TortillaException generateEnvVarException( String variable){
         return new TortillaException("500", "internal", "Can't read environment variable. " +
-                "Please specify " + variable + "environment variable");
+                "Please specify " + variable + " environment variable");
     }
 }

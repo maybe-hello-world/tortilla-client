@@ -1,13 +1,15 @@
 package kell.guacamole.small.domain;
 
 import com.google.gson.annotations.Expose;
-import lombok.Data;
-import lombok.SneakyThrows;
+import lombok.*;
 import org.apache.guacamole.GuacamoleException;
 
 import java.util.Base64;
 
-@Data
+@Setter
+@Getter
+@EqualsAndHashCode(doNotUseGetters = true)
+@RequiredArgsConstructor
 public class UserInfoRestModel {
 
     String domain;
@@ -18,9 +20,7 @@ public class UserInfoRestModel {
     @Expose(deserialize = false, serialize = false)
     String password;
 
-    //TODO: check it, is it needed
-    @SneakyThrows(GuacamoleException.class)
-    public String getPassword() {
+    public String getPassword() throws GuacamoleException {
         if (password == null && serverkey != null && userkey != null) {
             byte[] txt = Base64.getDecoder().decode(userkey);
             byte[] key = Base64.getDecoder().decode(serverkey);
@@ -45,4 +45,5 @@ public class UserInfoRestModel {
                 ", username='" + username + '\'' +
                 '}';
     }
+
 }

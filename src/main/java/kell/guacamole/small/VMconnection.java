@@ -22,8 +22,8 @@ public class VMconnection {
     private String mPassword;
     private String mVMid;
 
-    private final Integer screenWidth;
-    private final Integer screenHeight;
+    private Integer screenWidth;
+    private Integer screenHeight;
 
 
     private Logger logger = LogManager.getLogger(VMconnection.class);
@@ -40,10 +40,15 @@ public class VMconnection {
         try {
             screenWidth = widthStr != null ? Integer.parseInt(widthStr): null;
             screenHeight = widthStr != null ? Integer.parseInt(heightStr): null;
-        } catch (Exception ex) {
-            throw new TortillaException("500", "internal", "Parameters don't match requirements. Screen width/height must be decimal digits");
+
+            if ((screenWidth != null && screenWidth <= 0) || (screenHeight != null && screenHeight <= 0)) {
+                logger.warn("Parameters don't match requirements and have been ignored. Screen width/height must be decimal digits");
+            }
+        } catch (NumberFormatException ex) {
+            logger.warn("Parameters don't match requirements and have been ignored. Screen width/height must be decimal digits");
+            screenWidth = null;
+            screenHeight = null;
         }
-        validateParams(lSesskey, lVMid, lUserkey, screenWidth, screenHeight);
 
         mVMid = lVMid;
         sesskey = lSesskey;
@@ -51,26 +56,6 @@ public class VMconnection {
 
         userInfoService = new UserInfoService(appUrl + "/key", sesskey);
         vmInfoService = new VmInfoService(appUrl + "/vminfo", sesskey, mVMid);
-    }
-
-    /**
-     * Validate input params
-     * @param pSesskey string of letters and digits
-     * @param pVMid string of  letters and digits
-     * @param pUserKey no restrictions yet
-     * @param pScreenWidth  must be positive integer value or null
-     * @param pScreenHeight must be positive integer value or null
-     * @throws TortillaException
-     */
-    private void validateParams(String pSesskey, String pVMid, String pUserKey, Integer pScreenWidth, Integer pScreenHeight) throws TortillaException {
-        if (!pSesskey.matches("([a-zA-Z]+|[0-9]+)+") ||
-                !pVMid.matches("[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*")) {
-            throw new TortillaException("500", "internal", "Parameters don't match requirements");
-        }
-
-        if ((pScreenWidth != null && pScreenWidth <= 0) | (pScreenHeight != null && pScreenHeight <= 0)) {
-            throw new TortillaException("500", "internal", "Parameters don't match requirements. Screen width/height must be decimal digits");
-        }
     }
 
     /**

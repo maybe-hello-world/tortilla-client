@@ -38,10 +38,10 @@ public class VMconnection {
         String heightStr = request.getParameter("height");
 
         try {
-            screenWidth = widthStr != null ? Integer.parseInt(widthStr): null;
-            screenHeight = widthStr != null ? Integer.parseInt(heightStr): null;
+            screenWidth = Integer.parseInt(widthStr);
+            screenHeight =  Integer.parseInt(heightStr);
 
-            if ((screenWidth != null && screenWidth <= 0) || (screenHeight != null && screenHeight <= 0)) {
+            if ( screenWidth <= 0 || screenHeight <= 0) {
                 logger.warn("Parameters don't match requirements and have been ignored. Screen width/height must be decimal digits");
             }
         } catch (NumberFormatException ex) {

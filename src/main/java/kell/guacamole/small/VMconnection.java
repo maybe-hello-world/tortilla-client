@@ -50,7 +50,7 @@ public class VMconnection {
             screenHeight = null;
         }
         if (lSesskey == null || lUserkey == null || lVMid == null) {
-            logger.error("Parameters don't match requirements and have been ignored. Some parameter is null");
+            logger.error("Parameters don't match requirements. Some parameter is null");
         }
 
         mVMid = lVMid;

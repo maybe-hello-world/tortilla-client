@@ -15,12 +15,16 @@ import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 public class VMconnection {
-    UserInfoService userInfoService;
-    VmInfoService vmInfoService;
+    private UserInfoService userInfoService;
+    private VmInfoService vmInfoService;
 
     private String sesskey;
     private String mPassword;
     private String mVMid;
+
+    private final Integer screenWidth;
+    private final Integer screenHeight;
+
 
     private Logger logger = LogManager.getLogger(VMconnection.class);
 
@@ -30,16 +34,43 @@ public class VMconnection {
         String lSesskey = request.getParameter("sesskey");
         String lUserkey = request.getParameter("userkey");
         String lVMid = request.getParameter("vmid");
-        if (lSesskey.matches("([a-zA-Z]+|[0-9]+)+") &&
-                lVMid.matches("[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*")) {
-            mVMid = lVMid;
-            sesskey = lSesskey;
-            mPassword = lUserkey;
-        } else {
-            throw new TortillaException("500", "internal", "Parameters doesn't match requirements");
+        String widthStr = request.getParameter("width");
+        String heightStr = request.getParameter("height");
+
+        try {
+            screenWidth = widthStr != null ? Integer.parseInt(widthStr): null;
+            screenHeight = widthStr != null ? Integer.parseInt(heightStr): null;
+        } catch (Exception ex) {
+            throw new TortillaException("500", "internal", "Parameters don't match requirements. Screen width/height must be decimal digits");
         }
+        validateParams(lSesskey, lVMid, lUserkey, screenWidth, screenHeight);
+
+        mVMid = lVMid;
+        sesskey = lSesskey;
+        mPassword = lUserkey;
+
         userInfoService = new UserInfoService(appUrl + "/key", sesskey);
         vmInfoService = new VmInfoService(appUrl + "/vminfo", sesskey, mVMid);
+    }
+
+    /**
+     * Validate input params
+     * @param pSesskey string of letters and digits
+     * @param pVMid string of  letters and digits
+     * @param pUserKey no restrictions yet
+     * @param pScreenWidth  must be positive integer value or null
+     * @param pScreenHeight must be positive integer value or null
+     * @throws TortillaException
+     */
+    private void validateParams(String pSesskey, String pVMid, String pUserKey, Integer pScreenWidth, Integer pScreenHeight) throws TortillaException {
+        if (!pSesskey.matches("([a-zA-Z]+|[0-9]+)+") ||
+                !pVMid.matches("[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*")) {
+            throw new TortillaException("500", "internal", "Parameters don't match requirements");
+        }
+
+        if ((pScreenWidth != null && pScreenWidth <= 0) | (pScreenHeight != null && pScreenHeight <= 0)) {
+            throw new TortillaException("500", "internal", "Parameters don't match requirements. Screen width/height must be decimal digits");
+        }
     }
 
     /**
@@ -76,6 +107,10 @@ public class VMconnection {
         config.setParameter("password", userInfo.getPassword());
         config.setParameter("ignore-cert", "true");
         config.setParameter("security", "any");
+        if( screenWidth != null && screenHeight != null) {
+            config.setParameter("width", screenWidth.toString());
+            config.setParameter("height", screenHeight.toString());
+        }
 
         return config;
     }

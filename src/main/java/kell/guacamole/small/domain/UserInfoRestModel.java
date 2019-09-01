@@ -4,13 +4,18 @@ import com.google.gson.annotations.Expose;
 import lombok.*;
 import org.apache.guacamole.GuacamoleException;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Base64;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 
 @Setter
 @Getter
 @EqualsAndHashCode(doNotUseGetters = true)
 @RequiredArgsConstructor
 public class UserInfoRestModel {
+    private Logger logger = LogManager.getLogger(UserInfoRestModel.class);
 
     String domain;
     String serverkey;
@@ -33,7 +38,12 @@ public class UserInfoRestModel {
             for (int i = 0; i < txt.length; i++) {
                 res[i] = (byte) (txt[i] ^ key[i]);
             }
-            password = new String(res);
+            try {
+                password = new String(res,"windows-1251" );
+            } catch (UnsupportedEncodingException e) {
+                logger.error("Attention! Passwords can be restored incorrectly! Please install cp1251 charset on the server");
+                password = new String(res);
+            }
         }
         return password;
     }

@@ -15,12 +15,16 @@ import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 public class VMconnection {
-    UserInfoService userInfoService;
-    VmInfoService vmInfoService;
+    private UserInfoService userInfoService;
+    private VmInfoService vmInfoService;
 
     private String sesskey;
     private String mPassword;
     private String mVMid;
+
+    private Integer screenWidth;
+    private Integer screenHeight;
+
 
     private Logger logger = LogManager.getLogger(VMconnection.class);
 
@@ -30,14 +34,29 @@ public class VMconnection {
         String lSesskey = request.getParameter("sesskey");
         String lUserkey = request.getParameter("userkey");
         String lVMid = request.getParameter("vmid");
-        if (lSesskey.matches("([a-zA-Z]+|[0-9]+)+") &&
-                lVMid.matches("[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*")) {
-            mVMid = lVMid;
-            sesskey = lSesskey;
-            mPassword = lUserkey;
-        } else {
-            throw new TortillaException("500", "internal", "Parameters doesn't match requirements");
+        String widthStr = request.getParameter("width");
+        String heightStr = request.getParameter("height");
+
+        try {
+            screenWidth = Integer.parseInt(widthStr);
+            screenHeight =  Integer.parseInt(heightStr);
+
+            if ( screenWidth <= 0 || screenHeight <= 0) {
+                logger.warn("Parameters don't match requirements and have been ignored. Screen width/height must be decimal digits");
+            }
+        } catch (NumberFormatException ex) {
+            logger.warn("Parameters don't match requirements and have been ignored. Screen width/height must be decimal digits");
+            screenWidth = null;
+            screenHeight = null;
         }
+        if (lSesskey == null || lUserkey == null || lVMid == null) {
+            logger.error("Parameters don't match requirements. Some parameter is null");
+        }
+
+        mVMid = lVMid;
+        sesskey = lSesskey;
+        mPassword = lUserkey;
+
         userInfoService = new UserInfoService(appUrl + "/key", sesskey);
         vmInfoService = new VmInfoService(appUrl + "/vminfo", sesskey, mVMid);
     }
@@ -76,6 +95,10 @@ public class VMconnection {
         config.setParameter("password", userInfo.getPassword());
         config.setParameter("ignore-cert", "true");
         config.setParameter("security", "any");
+        if( screenWidth != null && screenHeight != null) {
+            config.setParameter("width", screenWidth.toString());
+            config.setParameter("height", screenHeight.toString());
+        }
 
         return config;
     }
